@@ -1,40 +1,62 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+ # Micro-frontend
 
-## Getting Started
+Projeto de estudo e demonstração de uma arquitetura baseada em **micro-frontends**, permitindo dividir uma aplicação web em partes independentes, desenvolvidas e implantadas separadamente.
 
-First, run the development server:
+## Objetivos
+
+- Organizar a aplicação em módulos independentes;
+- Facilitar a manutenção e a evolução de cada parte do sistema;
+- Permitir o uso de diferentes equipes e ciclos de desenvolvimento;
+- Demonstrar a integração entre aplicações frontend.
+
+## Pré-requisitos
+
+- [Node.js](https://nodejs.org/) 18 ou superior;
+- npm, yarn ou pnpm.
+
+## Como executar
+
+Baixe individualmente cada repositório pelos respectivos links e coloque todos na mesma pasta principal. Cada repositório deve ficar em uma subpasta própria, sem misturar seus arquivos.
+
+Clone o repositório, instale as dependências e inicie o projeto:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Iniciar cada micro
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+Cada micro frontend deve ser iniciado em um terminal separado, dentro da pasta que contém o `package.json` correspondente:
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+```bash
+cd <pasta-do-micro>
+npm install
+npm run dev
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Repita para cada micro e para a aplicação principal (host), se houver. Mantenha todos os processos em execução durante o desenvolvimento. Os nomes das pastas, scripts e portas dependem da configuração do repositório; consulte o `package.json` de cada aplicação e os arquivos `vite.config.*`. Se o projeto usar workspaces, siga também os comandos definidos no `package.json` da raiz.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Estrutura
 
-## Learn More
+Cada micro-frontend deve permanecer o mais independente possível, com responsabilidades bem definidas e uma interface clara para integração com a aplicação principal.
 
-To learn more about Next.js, take a look at the following resources:
+## Comunicação entre os micros
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Quando houver uma aplicação principal (host), ela carrega e compõe os micros conforme a configuração do projeto. Consulte o código do host, os pontos de entrada e `vite.config.*` para identificar como os micros são carregados e quais URLs ou portas são esperadas.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Para reduzir o acoplamento, os micros devem trocar informações por contratos explícitos, em vez de depender diretamente da implementação uns dos outros. O host pode passar propriedades ou parâmetros com dados e configuração; os micros podem comunicar ações por eventos ou callbacks. Para estado compartilhado, defina uma interface comum e compartilhe apenas o necessário. Dados persistentes podem ser tratados pela API/backend da aplicação. Ao alterar um contrato, atualize os micros consumidores e teste a integração com todos os processos envolvidos ativos.
 
-## Deploy on Vercel
+## Tecnologias
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+As tecnologias utilizadas podem ser consultadas nos arquivos de configuração do projeto, como `package.json` e `vite.config.*`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Contribuição
+
+1. Crie uma branch para sua alteração;
+2. Faça as mudanças e valide o projeto localmente;
+3. Envie um pull request descrevendo o que foi alterado.
+
+## Licença
+
+Este projeto é destinado a fins de estudo e demonstração.
