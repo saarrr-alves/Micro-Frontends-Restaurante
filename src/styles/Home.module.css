@@ -1,229 +1,153 @@
-.main {
+/* Layout principal da página. */
+.container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
-  padding: 6rem;
   min-height: 100vh;
-}
-
-.description {
-  display: inherit;
-  justify-content: inherit;
-  align-items: inherit;
-  font-size: 0.85rem;
-  max-width: var(--max-width);
-  width: 100%;
-  z-index: 2;
-  font-family: var(--font-mono);
-}
-
-.description a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.description p {
+  padding: 2rem;
+  box-sizing: border-box;
+  background-color: #fdfdfd;
   position: relative;
-  margin: 0;
-  padding: 1rem;
-  background-color: rgba(var(--callout-rgb), 0.5);
-  border: 1px solid rgba(var(--callout-border-rgb), 0.3);
-  border-radius: var(--border-radius);
 }
 
-.code {
-  font-weight: 700;
-  font-family: var(--font-mono);
+/* Checkbox usado para controlar a gaveta em telas menores. */
+.menuToggle {
+  display: none;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(25%, auto));
-  max-width: var(--max-width);
+.titulo {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #222;
+  text-align: center;
+}
+
+/* Layout padrão em duas colunas para telas maiores. */
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 1400px;
+  gap: 2rem;
+}
+
+/* Área do cardápio e resumo do pedido. */
+.colunaCardapio {
+  flex: 2;
   width: 100%;
 }
 
-.card {
-  padding: 1rem 1.2rem;
-  border-radius: var(--border-radius);
-  background: rgba(var(--card-rgb), 0);
-  border: 1px solid rgba(var(--card-border-rgb), 0);
-  transition: background 200ms, border 200ms;
-}
-
-.card span {
-  display: inline-block;
-  transition: transform 200ms;
-}
-
-.card h2 {
-  font-weight: 600;
-  margin-bottom: 0.7rem;
-}
-
-.card p {
-  margin: 0;
-  opacity: 0.6;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  max-width: 30ch;
-}
-
-.center {
+.pedidoContainer {
+  flex: 1;
+  border-left: 1px solid #eaeaea;
+  width: 100%;
+  padding-left: 2rem;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  padding: 4rem 0;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
-.center::before {
-  background: var(--secondary-glow);
-  border-radius: 50%;
-  width: 480px;
-  height: 360px;
-  margin-left: -400px;
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
 }
 
-.center::after {
-  background: var(--primary-glow);
-  width: 240px;
-  height: 180px;
-  z-index: -1;
+/* Controles da gaveta: ocultos no layout para telas maiores. */
+.hamburgerButton {
+  display: none;
 }
 
-.center::before,
-.center::after {
-  content: "";
-  left: 50%;
-  position: absolute;
-  filter: blur(45px);
-  transform: translateZ(0);
+.closeButton {
+  display: none;
 }
 
-.logo {
-  position: relative;
-}
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  .card:hover {
-    background: rgba(var(--card-rgb), 0.1);
-    border: 1px solid rgba(var(--card-border-rgb), 0.15);
-  }
-
-  .card:hover span {
-    transform: translateX(4px);
-  }
+.backdrop {
+  display: none;
 }
 
-@media (prefers-reduced-motion) {
-  .card:hover span {
-    transform: none;
-  }
-}
-
-/* Mobile */
-@media (max-width: 700px) {
-  .content {
-    padding: 4rem;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-    margin-bottom: 120px;
-    max-width: 320px;
-    text-align: center;
-  }
-
-  .card {
-    padding: 1rem 2.5rem;
-  }
-
-  .card h2 {
-    margin-bottom: 0.5rem;
-  }
-
-  .center {
-    padding: 8rem 0 6rem;
-  }
-
-  .center::before {
-    transform: none;
-    height: 300px;
-  }
-
-  .description {
-    font-size: 0.8rem;
-  }
-
-  .description a {
-    padding: 1rem;
-  }
-
-  .description p,
-  .description div {
+/* Em telas menores, o resumo do pedido funciona como uma gaveta lateral. */
+@media (max-width: 968px) {
+  .hamburgerButton {
     display: flex;
-    justify-content: center;
-    position: fixed;
-    width: 100%;
-  }
-
-  .description p {
     align-items: center;
-    inset: 0 0 auto;
-    padding: 2rem 1rem 1.4rem;
-    border-radius: 0;
+    gap: 0.5rem;
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background-color: #0070f3;
+    color: white;
     border: none;
-    border-bottom: 1px solid rgba(var(--callout-border-rgb), 0.25);
-    background: linear-gradient(
-      to bottom,
-      rgba(var(--background-start-rgb), 1),
-      rgba(var(--callout-rgb), 0.5)
-    );
-    background-clip: padding-box;
-    backdrop-filter: blur(24px);
+    padding: 0.8rem 1.2rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    transition: background-color 0.2s;
   }
 
-  .description div {
-    align-items: flex-end;
-    pointer-events: none;
-    inset: auto 0 0;
-    padding: 2rem;
-    height: 200px;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgb(var(--background-end-rgb)) 40%
-    );
-    z-index: 1;
-  }
-}
-
-/* Tablet and Smaller Desktop */
-@media (min-width: 701px) and (max-width: 1120px) {
-  .grid {
-    grid-template-columns: repeat(2, 50%);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .vercelLogo {
-    filter: invert(1);
+  .hamburgerButton:hover {
+    background-color: #005bb5;
   }
 
-  .logo {
-    filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
+  /* Fundo escurecido, exibido somente quando a gaveta está aberta. */
+  .backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1002;
+    cursor: pointer;
   }
-}
 
-@keyframes rotate {
-  from {
-    transform: rotate(360deg);
+  /* Gaveta posicionada fora da tela até ser aberta. */
+  .pedidoContainer {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 85%;
+    max-width: 400px;
+    height: 100vh;
+    background-color: #ffffff;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1003;
+    padding: 2rem 1rem;
+    border-left: none;
+    transition: right 0.3s ease-in-out;
+    overflow-y: auto;
+    box-sizing: border-box;
   }
-  to {
-    transform: rotate(0deg);
+
+  .closeButton {
+    display: block;
+    align-self: flex-end;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #666;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+  }
+
+  .closeButton:hover {
+    color: #111;
+  }
+
+  /* O checkbox marcado exibe o fundo e traz a gaveta para a tela. */
+  .menuToggle:checked ~ .row .backdrop {
+    display: block;
+  }
+
+  .menuToggle:checked ~ .row .pedidoContainer {
+    right: 0;
   }
 }
