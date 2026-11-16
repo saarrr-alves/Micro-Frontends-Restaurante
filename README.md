@@ -36,26 +36,44 @@ O **Container** é a aplicação principal (host): ele integra e exibe os micro-
 
 Cada aplicação deve ser iniciada em um terminal separado, dentro da pasta que contém o `package.json` correspondente. Mantenha os três processos em execução durante o uso:
 
-#### 1. Micro-frontend Container (Porta 3000)
+#### 1. Micro-frontend Cardápio (Porta 3001)
 ```bash
-git clone https://github.com/saarrr-alves/Micro-Frontends-Restaurante.git
-cd container
+git clone [https://github.com/saarrr-alves/Micro-Frontend-Cardapio.git](https://github.com/saarrr-alves/Micro-Frontend-Cardapio.git)
+cd Micro-Frontend-Cardapio
 npm install
 npm run dev
 ```
 
-#### 2. Micro-frontend Cardapio (Porta 3001)
+#### 2. Micro-frontend Pedidos (Porta 3002)
+
 ```bash
-git clone https://github.com/saarrr-alves/Micro-Frontend-Cardapio.git
-cd cardapio
+git clone [https://github.com/saarrr-alves/Micro-Frontend-Pedidos.git](https://github.com/saarrr-alves/Micro-Frontend-Pedidos.git)
+cd Micro-Frontend-Pedidos
 npm install
 npm run dev
 ```
 
-#### 3. Micro-frontend Pedidos (Porta 3002)
+#### 3. Aplicação Principal / Container (Porta 3000)
+
 ```bash
-git clone https://github.com/saarrr-alves/Micro-Frontend-Pedidos.git
-cd pedido
+git clone [https://github.com/saarrr-alves/Micro-Frontends-Restaurante.git](https://github.com/saarrr-alves/Micro-Frontends-Restaurante.git)
+cd Micro-Frontends-Restaurante
 npm install
 npm run dev
 ```
+
+Após iniciar os três projetos, acesse **`http://localhost:3000`** no navegador.
+
+## Comunicação entre os micros (`adicionarAoPedido`)
+
+Para manter o baixo acoplamento entre os micro-frontends — evitando que o **Cardápio** e o **Pedido** tenham dependências diretas entre si —, a comunicação ocorre no navegador por meio de **Custom Events** nativos (`window`):
+
+1. **Disparo no Cardápio (`Cardapio.jsx` — Porta 3001):** Quando o usuário clica no botão **"Adicionar ao pedido"** de qualquer prato, o micro-frontend `Cardápio` cria e dispara um evento global chamado `adicionarAoPedido` no objeto `window`, enviando os dados do item selecionado (`id`, `nome`, `preco` e `descricao`) dentro da propriedade `detail`:
+
+```javascript
+window.dispatchEvent(new CustomEvent('adicionarAoPedido', { detail: item }));
+```
+
+2. **Buffer de Segurança no Container (`index.js` — Porta 3000):** Como os micros são carregados de forma assíncrona via `lazy` após a montagem inicial no navegador (`componentDidMount`), o `Container` registra um ouvinte temporário (`this.bufferEvento`) que intercepta eventuais eventos `adicionarAoPedido` disparados antes de o micro `Pedido` finalizar seu carregamento (`window.__pedidoPronto === false`) e os armazena em uma fila temporária (`window.__filaPedidos`), evitando que o primeiro prato adicionado seja perdido.
+
+3. **Escuta e Atualização no Pedido (`Pedidos.jsx` — Porta 3002):** Assim que o componente `Pedidos` é montado (`componentDidMount`), ele registra o ouvinte global (`window.addEventListener('adicionarAoPedido', this.adicionarPedido)`), sinaliza `window.__pedidoPronto = true`, processa imediatamente qualquer item armazenado na fila inicial (`window.__filaPedidos`) e passa a escutar os novos eventos em tempo real, atualizando a lista de itens, as quantidades e o valor total do pedido.
