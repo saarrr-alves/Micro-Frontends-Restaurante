@@ -1,48 +1,87 @@
 import React, { lazy, Suspense } from 'react';
 import styles from '@/styles/Home.module.css';
 
-// Carrega os micro front-ends apenas no navegador para evitar problemas de SSR.
-const Cardapio = typeof window !== 'undefined' 
-  ? lazy(() => import('cardapio/Cardapio')) 
+const Cardapio = typeof window !== 'undefined'
+  ? lazy(() => import('cardapio/Cardapio'))
   : () => null;
 
-const Pedido = typeof window !== 'undefined' 
-  ? lazy(() => import('pedido/Pedidos')) 
+const Pedido = typeof window !== 'undefined'
+  ? lazy(() => import('pedido/Pedidos'))
   : () => null;
 
-export default function Home() {
-  return (
-    <main className={styles.container}>
-      {/* Controla a abertura do painel de pedidos em telas pequenas. */}
-      <input type="checkbox" id="menu-toggle" className={styles.menuToggle} />
+export default class Home extends React.Component {
+  state = {
+    mounted: false,
+  };
 
-      <h1 className={styles.titulo}>Micro Front-Ends</h1>
+  componentDidMount() {
+    // 1. Garante que servidor e cliente renderizem o mesmo HTML inicial antes de montar os micros
+    this.setState({ mounted: true });
 
-      <div className={styles.row}>
-        <div className={styles.colunaCardapio}>
-          <Suspense fallback={<div className={styles.loading}>Carregando cardápio...</div>}>
-            <Cardapio />
-          </Suspense>
+    // 2. Configura a fila de segurança para evitar perda do primeiro prato
+    window.__pedidoPronto = false;
+    window.__filaPedidos = [];
+
+    this.bufferEvento = (event) => {
+      if (!window.__pedidoPronto) {
+        window.__filaPedidos.push(event.detail);
+      }
+    };
+
+    window.addEventListener('adicionarAoPedido', this.bufferEvento);
+  }
+
+  componentWillUnmount() {
+    if (this.bufferEvento) {
+      window.removeEventListener('adicionarAoPedido', this.bufferEvento);
+    }
+  }
+
+  render() {
+    const { mounted } = this.state;
+
+    return (
+      <main className={styles.container}>
+        {/* Controla a abertura do painel de pedidos em telas pequenas. */}
+        <input type="checkbox" id="menu-toggle" className={styles.menuToggle} />
+
+        <h1 className={styles.titulo}>Micro Front-Ends</h1>
+
+        <div className={styles.row}>
+          <div className={styles.colunaCardapio}>
+            {mounted ? (
+              <Suspense fallback={<div className={styles.loading}>Carregando cardápio...</div>}>
+                <Cardapio />
+              </Suspense>
+            ) : (
+              <div className={styles.loading}>Carregando cardápio...</div>
+            )}
+          </div>
+
+          {/* Fundo que fecha o painel ao ser acionado. */}
+          <label htmlFor="menu-toggle" className={styles.backdrop} />
+
+          {/* Painel lateral de pedidos. */}
+          <div className={styles.pedidoContainer}>
+            <label htmlFor="menu-toggle" className={styles.closeButton}>
+              ✕ Fechar
+            </label>
+
+            {mounted ? (
+              <Suspense fallback={<div className={styles.loading}>Carregando pedidos...</div>}>
+                <Pedido />
+              </Suspense>
+            ) : (
+              <div className={styles.loading}>Carregando pedidos...</div>
+            )}
+          </div>
         </div>
-        {/* Fundo que fecha o painel ao ser acionado. */}
-        <label htmlFor="menu-toggle" className={styles.backdrop} />
 
-        {/* Painel lateral de pedidos. */}
-        <div className={styles.pedidoContainer}>
-          <label htmlFor="menu-toggle" className={styles.closeButton}>
-            ✕ Fechar
-          </label>
-
-          <Suspense fallback={<div className={styles.loading}>Carregando pedidos...</div>}>
-            <Pedido />
-          </Suspense>
-        </div>
-      </div>
-
-      {/* Atalho para abrir o painel em telas pequenas. */}
-      <label htmlFor="menu-toggle" className={styles.hamburgerButton}>
-        🛒 Ver Pedidos
-      </label>
-    </main>
-  );
+        {/* Atalho para abrir o painel em telas pequenas. */}
+        <label htmlFor="menu-toggle" className={styles.hamburgerButton}>
+          🛒 Ver Pedidos
+        </label>
+      </main>
+    );
+  }
 }
